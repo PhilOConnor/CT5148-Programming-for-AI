@@ -70,23 +70,22 @@ def numint(f, a, b, n, scheme="left"):
 
     """
     # STUDENTS ADD CODE FROM HERE TO END OF FUNCTION
-    xrange = np.linspace(a,b,n) # Create the linear range for values to be used for x
-    step = abs(a-xrange[1])     # Determine the step size in the linear space
+    step =(b - a) / float(n) 
+    xrange = np.linspace(a,b-step,n) # Create the linear range for values to be used for x
+    #step = abs(a-xrange[1])     # Determine the step size in the linear space
 
     if scheme =='left':        
-        return (f(xrange)*step)[:-1].sum()     # Multiply f(x) by the step size to give the area per slice and sum it together excluding the final point as this is the left rectangular scheme
+        return (f(xrange)*step).sum()     # Multiply f(x) by the step size to give the area per slice and sum it together excluding the final point as this is the left rectangular scheme
     
     elif scheme == 'midpoint':
-        xrange2 = np.linspace(a+step,b+step,n) # Create a new linear space with the step size offset
+        xrange2 = np.linspace(a+step,b,n) # Create a new linear space with the step size offset
         midpoint = (xrange+xrange2)/2          # Sum the two ranges together elementwise and divide by two to get the mean value
-        return (f(midpoint)*step)[:-1].sum()   # Multiply f(x) by the step size to give the area per slice and sum it together
+        return (f(midpoint)*step).sum()   # Multiply f(x) by the step size to give the area per slice and sum it together
     
-    #elif scheme == 'right':
-    #    xrange2 = np.linspace(a+step,b+step,n)
-    #    return (f(xrange2)*step)[1:-1].sum()
-    elif scheme == 'right': 
-        return (f(xrange)*step)[1:].sum()       #  Multiply f(x) by the step size to give the area per slice and sum it together excluding the first point as this is the right rectangular scheme
 
+    elif scheme == 'right': 
+        xrange_right = np.linspace(a+step,b,n)
+        return (f(xrange_right)*step).sum()       #  Multiply f(x) by the step size to give the area per slice and sum it together excluding the first point as this is the right rectangular schem
 
 def true_integral(fstr, a, b):
     """Using Sympy, calculate the definite integral of f from a to b and
@@ -136,7 +135,7 @@ def numint_err(fstr, a, b, n, scheme):
     integ = numint(f, a,b, n, scheme)
     
     try:
-        return(A,abs(A-integ), abs((A-integ)/A ))
+        return(A,abs(A-integ), abs((A-integ)/A ))                   # Calculations for absolute and relative error
     except ZeroDivisionError:
         print("Curve defined has 0 area - cannot calculate relative error")
 
@@ -164,9 +163,9 @@ def make_table(f_ab_s, ns, schemes):
     """
     
     # STUDENTS ADD CODE FROM HERE TO END OF FUNCTION
-    for (fstr, a, b), n, scheme in itertools.product(f_ab_s, ns, schemes):
+    for (fstr, a, b), n, scheme in itertools.product(f_ab_s, ns, schemes):    # Unpack the inputs given and assign to their respective variables.
         error = numint_err(fstr, a, b, n, scheme)
-        print(f"{fstr:s},{a:0.2f},{b:0.2f},{n:d},{scheme:s},{error[0]:.4g},{error[1]:0.4g},{error[2]:0.4g}")
+        print(f"{fstr:s},{a:0.2f},{b:0.2f},{n:d},{scheme:s},{error[0]:.4g},{error[1]:0.4g},{error[2]:0.4g}") # Print the output in the format requested
 
 def main():
     """Call make_table() as specified in the pdf."""
